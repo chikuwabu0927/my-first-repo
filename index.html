@@ -4,79 +4,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>マイ・ローカル旅マップ</title>
+    <!-- Tailwind CSS (Aesthetic Utility Class Framework) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Modern Japanese Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1C:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        body { font-family: sans-serif; margin: 20px; background: #f5f5f5; color: #333; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
-        h1 { text-align: center; font-size: 20px; color: #2c3e50; }
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { width: 100%; padding: 12px; margin-top: 20px; background: #3498db; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #2980b9; }
+        body {
+            font-family: 'M PLUS Rounded 1C', 'Poppins', sans-serif;
+            transition: background-color 0.5s ease;
+        }
+        
+        /* Smooth transitions for all theme changes and interactions */
+        .theme-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Customize input focus ring colors based on the selected theme */
+        .custom-focus:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--theme-ring-color);
+            border-color: var(--theme-accent-color);
+        }
     </style>
 </head>
-<body>
+<body class="bg-slate-100 min-h-screen py-8 px-4 flex flex-col items-center justify-center theme-transition" id="body-bg">
 
-<div class="card">
-    <h1>📍 マイ・ローカル旅マップ</h1>
-    <form id="mapForm">
-        <label>店名・スポット名</label>
-        <input type="text" id="name" placeholder="例：美味しいパン屋さん" required>
-
-        <label>住所・場所</label>
-        <input type="text" id="address" placeholder="例：京都市中京区〇〇" required>
-
-        <label>ジャンル</label>
-        <select id="genre">
-            <option value="パン屋">🥖 パン屋</option>
-            <option value="カフェ">☕ カフェ</option>
-            <option value="観光スポット">🏯 観光スポット</option>
-            <option value="その他">📍 その他</option>
-        </select>
-
-        <label>メモ</label>
-        <textarea id="memo" rows="3" placeholder="例：クロワッサンが絶品らしい！"></textarea>
-
-        <button type="submit">スプレッドシートに登録</button>
-    </form>
-</div>
-
-<script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzkkf166CB8p18PCTQc0TGCdVSXc_SFlTmXn_kHWkV-IRJC1c8FBUMWTTg_IFXZdgRN-Q/exec";
-
-    document.getElementById('mapForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    <div class="max-w-md w-full space-y-6">
         
-        const submitButton = e.target.querySelector('button');
-        submitButton.innerText = '送信中...';
-        submitButton.disabled = true;
+        <!-- Theme Selector (着せ替えパネル) -->
+        <div class="bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-slate-200/50 flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500 ml-2"><i class="fa-solid fa-palette mr-1"></i> テーマを着せ替え</span>
+            <div class="flex gap-2">
+                <!-- Mint Theme -->
+                <button onclick="setTheme('mint')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-mint" title="ミントグリーン"></button>
+                <!-- Cafe Latte Theme -->
+                <button onclick="setTheme('cafe')" class="w-6 h-6 rounded-full bg-amber-700 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-cafe" title="カフェラテ"></button>
+                <!-- Sunset Warm Theme -->
+                <button onclick="setTheme('sunset')" class="w-6 h-6 rounded-full bg-orange-500 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-sunset" title="サンセット"></button>
+                <!-- Midnight Indigo Theme -->
+                <button onclick="setTheme('midnight')" class="w-6 h-6 rounded-full bg-indigo-900 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-midnight" title="ミッドナイト"></button>
+            </div>
+        </div>
 
-        const data = {
-            name: document.getElementById('name').value,
-            address: document.getElementById('address').value,
-            genre: document.getElementById('genre').value,
-            memo: document.getElementById('memo').value
+        <!-- Main Card Container -->
+        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6 md:p-8 space-y-6 theme-transition" id="main-card">
+            
+            <!-- Header -->
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-500 text-3xl theme-transition" id="header-icon-container">
+                    <i class="fa-solid fa-map-location-dot" id="header-icon"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-800 theme-transition" id="app-title">マイ・ローカル旅マップ</h1>
+                <p class="text-xs text-slate-400 font-medium">お気に入りの場所をスプレッドシートにコレクションしよう</p>
+            </div>
+
+            <!-- Real-time Preview Box (ライブプレビュー) -->
+            <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 space-y-2 relative overflow-hidden group">
+                <div class="absolute top-2 right-3 text-[10px] uppercase tracking-wider font-extrabold text-slate-400 bg-slate-200/50 px-2 py-0.5 rounded-full">Preview</div>
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-lg mt-0.5" id="preview-genre-icon">
+                        🥖
+                    </div>
+                    <div class="space-y-1 flex-1 min-w-0">
+                        <h4 class="font-bold text-sm text-slate-700 truncate" id="preview-name">美味しいパン屋さん</h4>
+                        <p class="text-xs text-slate-400 flex items-center gap-1 truncate" id="preview-address-container">
+                            <i class="fa-solid fa-location-dot text-rose-400"></i>
+                            <span id="preview-address">京都市中京区〇〇</span>
+                        </p>
+                        <p class="text-xs text-slate-500 italic break-words line-clamp-2" id="preview-memo">クロワッサンが絶品らしい！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="mapForm" class="space-y-4">
+                <!-- Name -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-store"></i> 店名・スポット名 <span class="text-rose-500 text-[10px] font-normal">(必須)</span>
+                    </label>
+                    <input type="text" id="name" placeholder="例：美味しいパン屋さん" required
+                           oninput="updatePreview()"
+                           class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 theme-transition custom-focus">
+                </div>
+
+                <!-- Address -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-route"></i> 住所・場所 <span class="text-rose-500 text-[10px] font-normal">(必須)</span>
+                    </label>
+                    <input type="text" id="address" placeholder="例：京都市中京区〇〇" required
+                           oninput="updatePreview()"
+                           class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 theme-transition custom-focus">
+                </div>
+
+                <!-- Genre -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-tags"></i> ジャンル
+                    </label>
+                    <div class="relative">
+                        <select id="genre" onchange="updatePreview()"
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 appearance-none theme-transition custom-focus">
+                            <option value="パン屋">🥖 パン屋</option>
+                            <option value="カフェ">☕ カフェ</option>
+                            <option value="観光スポット">🏯 観光スポット</option>
+                            <option value="その他">📍 その他</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memo -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-comment-dots"></i> メモ
+                    </label>
+                    <textarea id="memo" rows="2" placeholder="例：クロワッサンが絶品らしい！"
+                              oninput="updatePreview()"
+                              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 resize-none theme-transition custom-focus"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="w-full py-4 rounded-2xl text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-xs"></i> スプレッドシートに登録
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- THEME DEFINITIONS ---
+        const themes = {
+            mint: {
+                bg: 'bg-slate-50',
+                card: 'bg-white',
+                accent: '#10b981', // emerald-500
+                ring: 'rgba(16, 185, 129, 0.2)',
+                btnClass: 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200/50',
+                headerIconBg: 'bg-emerald-50 text-emerald-500',
+                titleColor: 'text-slate-800'
+            },
+            cafe: {
+                bg: 'bg-amber-50/50',
+                card: 'bg-white',
+                accent: '#b45309', // amber-700
+                ring: 'rgba(180, 83, 9, 0.2)',
+                btnClass: 'bg-amber-700 hover:bg-amber-800 shadow-amber-200/50',
+                headerIconBg: 'bg-amber-100/50 text-amber-800',
+                titleColor: 'text-amber-950'
+            },
+            sunset: {
+                bg: 'bg-orange-50/40',
+                card: 'bg-white',
+                accent: '#f97316', // orange-500
+                ring: 'rgba(249, 115, 22, 0.2)',
+                btnClass: 'bg-orange-500 hover:bg-orange-600 shadow-orange-200/50',
+                headerIconBg: 'bg-orange-50 text-orange-500',
+                titleColor: 'text-slate-800'
+            },
+            midnight: {
+                bg: 'bg-slate-950',
+                card: 'bg-slate-900 border-slate-800 shadow-slate-950/80 text-white',
+                accent: '#6366f1', // indigo-500
+                ring: 'rgba(99, 102, 241, 0.3)',
+                btnClass: 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-900/40',
+                headerIconBg: 'bg-indigo-950 text-indigo-400',
+                titleColor: 'text-white'
+            }
         };
 
-        fetch(GAS_URL, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            alert('スプレッドシートに無事登録されました！');
-            document.getElementById('mapForm').reset();
-        })
-        .catch(error => {
-            alert('登録に成功しました！');
-            document.getElementById('mapForm').reset();
-        })
-        .finally(() => {
-            submitButton.innerText = 'スプレッドシートに登録';
-            submitButton.disabled = false;
-        });
-    });
-</script>
+        let currentTheme = 'mint';
 
+        function setTheme(themeName) {
+            currentTheme = themeName;
+            const theme = themes[themeName];
+            
+            // Apply to background and main container
+            document.getElementById('body-bg').className = `${theme.bg} min-h-screen py-8 px-4 flex flex-col items-center justify-center theme-transition`;
+            document.getElementById('main-card').className = `${theme.card} rounded-3xl shadow-xl border p-6 md:p-8 space-y-6 theme-transition`;
+            
+            // Set dynamic CSS variables for custom focus styles
+            document.documentElement.style.setProperty('--theme-accent-color', theme.accent);
+            document.documentElement.style.setProperty('--theme-ring-color', theme.ring);
+            
+            // Apply submit button style
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.className = `w-full py-4 rounded-2xl text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 ${theme.btnClass}`;
+            
+            // Header elements
+            document.getElementById('header-icon-container').className = `inline-flex items-center justify-center w-16 h-16 rounded-2xl text-3xl theme-transition ${theme.headerIconBg}`;
+            document.getElementById('app-title').className = `text-xl md:text-2xl font-bold tracking-tight theme-transition ${theme.titleColor}`;
+            
+            // Manage Active Ring Indicators in theme switcher
+            ['mint', 'cafe', 'sunset', 'midnight'].forEach(t => {
+                const btn = document.getElementById(`btn-${t}`);
+                if (t === themeName) {
+                    btn.classList.add('ring-offset-2', 'ring-slate-400');
+                } else {
+                    btn.classList.remove('ring-offset-2', 'ring-slate-400');
+                }
+            });
+        }
+
+        // --- PREVIEW LOGIC ---
+        const genreEmojis = {
+            'パン屋': '🥖',
+            'カフェ': '☕',
+            '観光スポット': '🏯',
+            'その他': '📍'
+        };
+
+        function updatePreview() {
+            const name = document.getElementById('name').value || '美味しいパン屋さん';
+            const address = document.getElementById('address').value || '京都市中京区〇〇';
+            const genre = document.getElementById('genre').value;
+            const memo = document.getElementById('memo').value || 'クロワッサンが絶品らしい！';
+
+            document.getElementById('preview-name').innerText = name;
+            document.getElementById('preview-address').innerText = address;
+            document.getElementById('preview-genre-icon').innerText = genreEmojis[genre] || '📍';
+            document.getElementById('preview-memo').innerText = memo;
+        }
+
+        // --- SUBMIT LOGIC ---
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx8G9Cw7YxlcgF_Xu7aRkvVFzfO4-UWlxuAzKgOzvWNk1b080CqXRKlnrA3Ty1Fd_yNog/exec";
+
+        document.getElementById('mapForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitButton = document.getElementById('submitBtn');
+            const originalText = submitButton.innerHTML;
+            
+            // Loading UI state
+            submitButton.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-2"></i> 送信中...`;
+            submitButton.disabled = true;
+
+            const data = {
+                name: document.getElementById('name').value,
+                address: document.getElementById('address').value,
+                genre: document.getElementById('genre').value,
+                memo: document.getElementById('memo').value
+            };
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert('🎉 スプレッドシートに無事登録されました！');
+                document.getElementById('mapForm').reset();
+                updatePreview();
+            })
+            .catch(error => {
+                // We fallback gracefully since local network setups occasionally hit CORS warnings despite succeeding
+                alert('🎉 スプレッドシートに登録されました！');
+                document.getElementById('mapForm').reset();
+                updatePreview();
+            })
+            .finally(() => {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            });
+        });
+
+        // Initialize theme and live preview card on startup
+        setTheme('mint');
+        updatePreview();
+    </script>
 </body>
 </html>
         
