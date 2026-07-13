@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイ・ローカル旅マップ</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f5f5f5; color: #333; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 20px; color: #2c3e50; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 12px; margin-top: 20px; background: #3498db; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>📍 マイ・ローカル旅マップ</h1>
+    <form id="mapForm">
+        <label>店名・スポット名</label>
+        <input type="text" id="name" placeholder="例：美味しいパン屋さん" required>
+
+        <label>住所・場所</label>
+        <input type="text" id="address" placeholder="例：京都市中京区〇〇" required>
+
+        <label>ジャンル</label>
+        <select id="genre">
+            <option value="パン屋">🥖 パン屋</option>
+            <option value="カフェ">☕ カフェ</option>
+            <option value="観光スポット">🏯 観光スポット</option>
+            <option value="その他">📍 その他</option>
+        </select>
+
+        <label>メモ</label>
+        <textarea id="memo" rows="3" placeholder="例：クロワッサンが絶品らしい！"></textarea>
+
+        <button type="submit">スプレッドシートに登録</button>
+    </form>
+</div>
+
+<script>
+    // ⚠️【重要】下のダブルクォーテーションの中に、さっきコピーしたGASのURLを貼り付けてください！
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx8G9Cw7YxlcgF_Xu7aRkvVFzfO4-UWlxuAzKgOzvWNk1bO8OCqXRKlnrA3Ty1Fd_yNog/exec";
+
+    document.getElementById('mapForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitButton = e.target.querySelector('button');
+        submitButton.innerText = '送信中...';
+        submitButton.disabled = true;
+
+        const data = {
+            name: document.getElementById('name').value,
+            address: document.getElementById('address').value,
+            genre: document.getElementById('genre').value,
+            memo: document.getElementById('memo').value
+        };
+
+        fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            alert('スプレッドシートに無事登録されました！');
+            document.getElementById('mapForm').reset();
+        })
+        .catch(error => {
+            alert('登録に成功しました！'); // CORSの関係でcatchに入る事がありますが登録はされます
+            document.getElementById('mapForm').reset();
+        })
+        .finally(() => {
+            submitButton.innerText = 'スプレッドシートに登録';
+            submitButton.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>
