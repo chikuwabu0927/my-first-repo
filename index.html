@@ -41,8 +41,7 @@
 </div>
 
 <script>
-    // ⚠️【重要】下のダブルクォーテーションの中に、さっきコピーしたGASのURLを貼り付けてください！
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbx8G9Cw7YxlcgF_Xu7aRkvVFzfO4-UWlxuAzKgOzvWNk1bO8OCqXRKlnrA3Ty1Fd_yNog/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx8G9Cw7YxlcgF_Xu7aRkvVFzfO4-UWlxuAzKgOzvWNk1b080CqXRKlnrA3Ty1Fd_yNog/exec";
 
     document.getElementById('mapForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -68,7 +67,7 @@
             document.getElementById('mapForm').reset();
         })
         .catch(error => {
-            alert('登録に成功しました！'); // CORSの関係でcatchに入る事がありますが登録はされます
+            alert('登録に成功しました！');
             document.getElementById('mapForm').reset();
         })
         .finally(() => {
@@ -80,3 +79,4 @@
 
 </body>
 </html>
+        
