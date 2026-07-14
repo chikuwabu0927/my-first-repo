@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マイ・ローカル旅マップ</title>
-  <!-- Tailwind CSS & FontAwesome (Icon) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&family=Zen+Maru+Gothic:wght=400;500;700&display=swap');
     body {
       font-family: 'Zen Maru Gothic', 'Plus Jakarta Sans', sans-serif;
     }
@@ -34,7 +33,6 @@
 
   <div class="max-w-md mx-auto space-y-6">
     
-    <!-- テーマ切り替えスイッチャー -->
     <div class="flex items-center justify-between bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-5 py-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 transition-all duration-300" id="switcher-panel">
       <div class="flex items-center space-x-2 text-sm font-medium text-slate-600 dark:text-slate-300" id="theme-label">
         <i class="fa-solid fa-palette text-slate-400"></i>
@@ -48,10 +46,8 @@
       </div>
     </div>
 
-    <!-- メインカード -->
     <div class="bg-white rounded-3xl p-6 shadow-md border border-[#D8EDE2] transition-all duration-300 space-y-6" id="main-card">
       
-      <!-- ヘッダー -->
       <div class="text-center space-y-2">
         <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#E8F5E9] text-2xl transition-colors duration-300" id="brand-icon-wrapper">
           <span id="brand-icon">🗺️</span>
@@ -60,7 +56,6 @@
         <p class="text-xs text-slate-500 transition-colors duration-300" id="app-subtitle">お気に入りの場所をスプレッドシートにコレクションしよう</p>
       </div>
 
-      <!-- リアルタイム・プレビュー -->
       <div class="p-4 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200 space-y-3 transition-colors duration-300" id="preview-box">
         <div class="flex justify-between items-center">
           <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Preview</span>
@@ -79,10 +74,8 @@
         </div>
       </div>
 
-      <!-- 入力フォーム -->
       <form onsubmit="handleSubmit(event)" class="space-y-4">
         
-        <!-- 店名 -->
         <div class="space-y-1">
           <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-name">
             <i class="fa-solid fa-store text-slate-400"></i>
@@ -93,7 +86,6 @@
                  class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F]/20 focus:border-[#2D6A4F] text-sm transition-all placeholder:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
         </div>
 
-        <!-- 住所 -->
         <div class="space-y-1">
           <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-address">
             <i class="fa-solid fa-map-pin text-slate-400"></i>
@@ -104,7 +96,6 @@
                  class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F]/20 focus:border-[#2D6A4F] text-sm transition-all placeholder:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
         </div>
 
-        <!-- ジャンル -->
         <div class="space-y-1">
           <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-genre">
             <i class="fa-solid fa-tags text-slate-400"></i>
@@ -121,7 +112,6 @@
           </select>
         </div>
 
-        <!-- おすすめ度（星評価）⭐新機能 -->
         <div class="space-y-1">
           <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-rating">
             <i class="fa-solid fa-star text-slate-400"></i>
@@ -140,7 +130,6 @@
           </div>
         </div>
 
-        <!-- メモ -->
         <div class="space-y-1">
           <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-memo">
             <i class="fa-solid fa-comment-dots text-slate-400"></i>
@@ -151,7 +140,6 @@
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F]/20 focus:border-[#2D6A4F] text-sm transition-all placeholder:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-white resize-none"></textarea>
         </div>
 
-        <!-- 送信ボタン -->
         <button type="submit" id="submit-btn"
                 class="w-full py-3.5 bg-[#2D6A4F] hover:bg-[#1B4332] text-white font-bold rounded-xl shadow-md transition-all duration-150 flex items-center justify-center space-x-2">
           <i class="fa-solid fa-paper-plane text-xs" id="btn-icon"></i>
@@ -160,13 +148,105 @@
 
       </form>
     </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-md border border-[#D8EDE2] transition-all duration-300 space-y-4" id="list-card">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-700" id="list-header">
+        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2 dark:text-slate-200" id="list-title">
+          <i class="fa-solid fa-map-location-dot text-[#2D6A4F]" id="list-title-icon"></i>
+          <span>みんなの旅マップ（登録一覧）</span>
+        </h2>
+        <button onclick="fetchSpots()" class="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
+          <i class="fa-solid fa-rotate-right"></i> 更新
+        </button>
+      </div>
+
+      <div id="spots-container" class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+        <div class="text-center py-8 text-slate-400 space-y-2">
+          <i class="fa-solid fa-circle-notch animate-spin text-xl"></i>
+          <p class="text-xs">スポットを読み込んでいます...</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // 💡 ここにあなたのGASのウェブアプリURLを貼り付けてください！
+    // 💡 ここに新しくコピーした【最新のGASのウェブアプリURL】を貼り付けてください！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzG5E_ARPzSdNhJFe7bEUc2Y9KkpcROpzyaiUho1QyXwyUQKfueUHxtjMq-xTpmNQ6EXw/exec";
 
     let currentTheme = 'mint';
+
+    // スプレッドシートからデータを取得して一覧に表示する
+    function fetchSpots() {
+      const container = document.getElementById('spots-container');
+      
+      // 読み込み中表示
+      container.innerHTML = `
+        <div class="text-center py-8 text-slate-400 space-y-2">
+          <i class="fa-solid fa-circle-notch animate-spin text-xl"></i>
+          <p class="text-xs">スポットを読み込んでいます...</p>
+        </div>
+      `;
+
+      fetch(GAS_URL)
+        .then(response => response.json())
+        .then(data => {
+          container.innerHTML = '';
+          
+          if (data.length === 0) {
+            container.innerHTML = `
+              <div class="text-center py-8 text-slate-400">
+                <i class="fa-regular fa-folder-open text-xl mb-1 block"></i>
+                <p class="text-xs">まだ登録されているスポットがありません。</p>
+              </div>
+            `;
+            return;
+          }
+
+          // 最新の登録が「上」に来るようにデータを逆順にする
+          data.reverse().forEach(spot => {
+            const card = document.createElement('div');
+            
+            // ジャンルから絵文字を分離
+            const emoji = spot.genre ? spot.genre.split(' ')[0] : '📍';
+            const genreText = spot.genre ? spot.genre : 'その他';
+
+            // ダークモードとテーマ別のカード背景色の対応
+            const isDark = document.documentElement.classList.contains('dark');
+            const cardBg = isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50/50 border-slate-100';
+            const textClass = isDark ? 'text-slate-200' : 'text-slate-800';
+            const memoClass = isDark ? 'text-slate-400' : 'text-slate-500';
+
+            card.className = `p-4 rounded-2xl border transition-all duration-300 ${cardBg} space-y-2`;
+            card.innerHTML = `
+              <div class="flex justify-between items-start">
+                <div class="flex items-center space-x-2 min-w-0">
+                  <span class="text-xl">${emoji}</span>
+                  <h4 class="font-bold text-sm ${textClass} truncate">${spot.name}</h4>
+                </div>
+                <span class="text-amber-400 text-xs shrink-0">${spot.rating || ''}</span>
+              </div>
+              <div class="space-y-1 pl-7">
+                <p class="text-[11px] text-slate-400 flex items-center gap-1 truncate">
+                  <i class="fa-solid fa-location-dot text-rose-500 text-[10px]"></i>
+                  <span>${spot.address}</span>
+                </p>
+                ${spot.memo ? `<p class="text-xs ${memoClass} italic break-words bg-white/40 dark:bg-slate-900/40 p-2 rounded-xl mt-1">${spot.memo}</p>` : ''}
+              </div>
+            `;
+            container.appendChild(card);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching spots:', error);
+          container.innerHTML = `
+            <div class="text-center py-8 text-rose-400">
+              <i class="fa-solid fa-triangle-exclamation text-xl mb-1 block"></i>
+              <p class="text-xs">データの読み込みに失敗しました。</p>
+            </div>
+          `;
+        });
+    }
 
     // 星評価の制御
     function setRating(rating) {
@@ -257,6 +337,11 @@
         setRating(5); // 星を5に戻す
         updatePreview();
 
+        // 🗺️ 登録が成功したら、1.5秒後に一覧データを自動で再読み込み！
+        setTimeout(() => {
+          fetchSpots();
+        }, 1500);
+
         setTimeout(() => {
           btn.disabled = false;
           btn.classList.remove('opacity-80', 'cursor-not-allowed');
@@ -300,10 +385,12 @@
         bg.classList.add('text-slate-800');
       }
 
-      // カード
-      const card = document.getElementById('main-card');
-      card.style.backgroundColor = config.card;
-      card.style.borderColor = config.border;
+      // カード (入力用・一覧表示用)
+      const cards = [document.getElementById('main-card'), document.getElementById('list-card')];
+      cards.forEach(card => {
+        card.style.backgroundColor = config.card;
+        card.style.borderColor = config.border;
+      });
 
       // タイトル・サブタイトル・各種テキストの色調整
       const textEls = [
@@ -329,6 +416,10 @@
       const iconWrapper = document.getElementById('brand-icon-wrapper');
       iconWrapper.style.backgroundColor = config.accent;
       
+      // 一覧タイトルのアイコン色
+      const listTitleIcon = document.getElementById('list-title-icon');
+      listTitleIcon.style.color = config.primary;
+
       // プレビューボックス
       const previewBox = document.getElementById('preview-box');
       if (themeName === 'midnight') {
@@ -345,6 +436,9 @@
 
       // 送信ボタンのカラー適用
       applyThemeBtnStyles(themeName);
+
+      // 🗺️ テーマ切り替え時にも一覧カードのデザインをきれいに再反映
+      fetchSpots();
     }
 
     function applyThemeBtnStyles(themeName) {
@@ -360,6 +454,7 @@
     window.onload = () => {
       updatePreview();
       setRating(5);
+      fetchSpots(); // ページが開いた時に一覧を自動読み込み
     }
   </script>
 </body>
