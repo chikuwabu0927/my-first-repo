@@ -1,285 +1,366 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マイ・ローカル旅マップ</title>
-    <!-- Tailwind CSS (Aesthetic Utility Class Framework) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Modern Japanese Typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1C:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <style>
-        body {
-            font-family: 'M PLUS Rounded 1C', 'Poppins', sans-serif;
-            transition: background-color 0.5s ease;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マイ・ローカル旅マップ</title>
+  <!-- Tailwind CSS & FontAwesome (Icon) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+    body {
+      font-family: 'Zen Maru Gothic', 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              mint: { bg: '#F2F9F6', card: '#FFFFFF', primary: '#2D6A4F', primaryHover: '#1B4332', accent: '#E8F5E9', border: '#D8EDE2' },
+              latte: { bg: '#FDFBF7', card: '#FFFFFF', primary: '#6F4E37', primaryHover: '#5C3D2E', accent: '#F5EBE6', border: '#EADBC8' },
+              sunset: { bg: '#FFF5F5', card: '#FFFFFF', primary: '#D9383A', primaryHover: '#B32426', accent: '#FFEBEB', border: '#FFD1D1' },
+              midnight: { bg: '#0B0F19', card: '#161F30', primary: '#3B82F6', primaryHover: '#2563EB', accent: '#1E293B', border: '#334155', text: '#F3F4F6', muted: '#9CA3AF' }
+            }
+          }
         }
-        
-        /* Smooth transitions for all theme changes and interactions */
-        .theme-transition {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Customize input focus ring colors based on the selected theme */
-        .custom-focus:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px var(--theme-ring-color);
-            border-color: var(--theme-accent-color);
-        }
-    </style>
+      }
+    }
+  </script>
 </head>
-<body class="bg-slate-100 min-h-screen py-8 px-4 flex flex-col items-center justify-center theme-transition" id="body-bg">
+<body class="transition-colors duration-300 min-h-screen py-8 px-4 bg-[#F2F9F6] text-slate-800" id="body-bg">
 
-    <div class="max-w-md w-full space-y-6">
-        
-        <!-- Theme Selector (着せ替えパネル) -->
-        <div class="bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-slate-200/50 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 ml-2"><i class="fa-solid fa-palette mr-1"></i> テーマを着せ替え</span>
-            <div class="flex gap-2">
-                <!-- Mint Theme -->
-                <button onclick="setTheme('mint')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-mint" title="ミントグリーン"></button>
-                <!-- Cafe Latte Theme -->
-                <button onclick="setTheme('cafe')" class="w-6 h-6 rounded-full bg-amber-700 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-cafe" title="カフェラテ"></button>
-                <!-- Sunset Warm Theme -->
-                <button onclick="setTheme('sunset')" class="w-6 h-6 rounded-full bg-orange-500 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-sunset" title="サンセット"></button>
-                <!-- Midnight Indigo Theme -->
-                <button onclick="setTheme('midnight')" class="w-6 h-6 rounded-full bg-indigo-900 border-2 border-white ring-2 ring-transparent hover:scale-110 transition active:scale-95" id="btn-midnight" title="ミッドナイト"></button>
-            </div>
-        </div>
-
-        <!-- Main Card Container -->
-        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6 md:p-8 space-y-6 theme-transition" id="main-card">
-            
-            <!-- Header -->
-            <div class="text-center space-y-2">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-500 text-3xl theme-transition" id="header-icon-container">
-                    <i class="fa-solid fa-map-location-dot" id="header-icon"></i>
-                </div>
-                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-800 theme-transition" id="app-title">マイ・ローカル旅マップ</h1>
-                <p class="text-xs text-slate-400 font-medium">お気に入りの場所をスプレッドシートにコレクションしよう</p>
-            </div>
-
-            <!-- Real-time Preview Box (ライブプレビュー) -->
-            <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 space-y-2 relative overflow-hidden group">
-                <div class="absolute top-2 right-3 text-[10px] uppercase tracking-wider font-extrabold text-slate-400 bg-slate-200/50 px-2 py-0.5 rounded-full">Preview</div>
-                <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-lg mt-0.5" id="preview-genre-icon">
-                        🥖
-                    </div>
-                    <div class="space-y-1 flex-1 min-w-0">
-                        <h4 class="font-bold text-sm text-slate-700 truncate" id="preview-name">美味しいパン屋さん</h4>
-                        <p class="text-xs text-slate-400 flex items-center gap-1 truncate" id="preview-address-container">
-                            <i class="fa-solid fa-location-dot text-rose-400"></i>
-                            <span id="preview-address">京都市中京区〇〇</span>
-                        </p>
-                        <p class="text-xs text-slate-500 italic break-words line-clamp-2" id="preview-memo">クロワッサンが絶品らしい！</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form -->
-            <form id="mapForm" class="space-y-4">
-                <!-- Name -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-store"></i> 店名・スポット名 <span class="text-rose-500 text-[10px] font-normal">(必須)</span>
-                    </label>
-                    <input type="text" id="name" placeholder="例：美味しいパン屋さん" required
-                           oninput="updatePreview()"
-                           class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 theme-transition custom-focus">
-                </div>
-
-                <!-- Address -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-route"></i> 住所・場所 <span class="text-rose-500 text-[10px] font-normal">(必須)</span>
-                    </label>
-                    <input type="text" id="address" placeholder="例：京都市中京区〇〇" required
-                           oninput="updatePreview()"
-                           class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 theme-transition custom-focus">
-                </div>
-
-                <!-- Genre -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-tags"></i> ジャンル
-                    </label>
-                    <div class="relative">
-                        <select id="genre" onchange="updatePreview()"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 appearance-none theme-transition custom-focus">
-                            <option value="パン屋">🥖 パン屋</option>
-                            <option value="カフェ">☕ カフェ</option>
-                            <option value="観光スポット">🏯 観光スポット</option>
-                            <option value="その他">📍 その他</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Memo -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-comment-dots"></i> メモ
-                    </label>
-                    <textarea id="memo" rows="2" placeholder="例：クロワッサンが絶品らしい！"
-                              oninput="updatePreview()"
-                              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 resize-none theme-transition custom-focus"></textarea>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="submitBtn" class="w-full py-4 rounded-2xl text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-paper-plane text-xs"></i> スプレッドシートに登録
-                </button>
-            </form>
-        </div>
+  <div class="max-w-md mx-auto space-y-6">
+    
+    <!-- テーマ切り替えスイッチャー -->
+    <div class="flex items-center justify-between bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-5 py-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 transition-all duration-300" id="switcher-panel">
+      <div class="flex items-center space-x-2 text-sm font-medium text-slate-600 dark:text-slate-300" id="theme-label">
+        <i class="fa-solid fa-palette text-slate-400"></i>
+        <span>テーマを着せ替え</span>
+      </div>
+      <div class="flex space-x-2">
+        <button onclick="setTheme('mint')" class="w-5 h-5 rounded-full bg-[#2D6A4F] border-2 border-white shadow-sm hover:scale-110 transition-transform" title="ミント"></button>
+        <button onclick="setTheme('latte')" class="w-5 h-5 rounded-full bg-[#6F4E37] border-2 border-white shadow-sm hover:scale-110 transition-transform" title="ラテ"></button>
+        <button onclick="setTheme('sunset')" class="w-5 h-5 rounded-full bg-[#D9383A] border-2 border-white shadow-sm hover:scale-110 transition-transform" title="サンセット"></button>
+        <button onclick="setTheme('midnight')" class="w-5 h-5 rounded-full bg-[#1E293B] border-2 border-white shadow-sm hover:scale-110 transition-transform" title="ミッドナイト"></button>
+      </div>
     </div>
 
-    <script>
-        // --- THEME DEFINITIONS ---
-        const themes = {
-            mint: {
-                bg: 'bg-slate-50',
-                card: 'bg-white',
-                accent: '#10b981', // emerald-500
-                ring: 'rgba(16, 185, 129, 0.2)',
-                btnClass: 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200/50',
-                headerIconBg: 'bg-emerald-50 text-emerald-500',
-                titleColor: 'text-slate-800'
-            },
-            cafe: {
-                bg: 'bg-amber-50/50',
-                card: 'bg-white',
-                accent: '#b45309', // amber-700
-                ring: 'rgba(180, 83, 9, 0.2)',
-                btnClass: 'bg-amber-700 hover:bg-amber-800 shadow-amber-200/50',
-                headerIconBg: 'bg-amber-100/50 text-amber-800',
-                titleColor: 'text-amber-950'
-            },
-            sunset: {
-                bg: 'bg-orange-50/40',
-                card: 'bg-white',
-                accent: '#f97316', // orange-500
-                ring: 'rgba(249, 115, 22, 0.2)',
-                btnClass: 'bg-orange-500 hover:bg-orange-600 shadow-orange-200/50',
-                headerIconBg: 'bg-orange-50 text-orange-500',
-                titleColor: 'text-slate-800'
-            },
-            midnight: {
-                bg: 'bg-slate-950',
-                card: 'bg-slate-900 border-slate-800 shadow-slate-950/80 text-white',
-                accent: '#6366f1', // indigo-500
-                ring: 'rgba(99, 102, 241, 0.3)',
-                btnClass: 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-900/40',
-                headerIconBg: 'bg-indigo-950 text-indigo-400',
-                titleColor: 'text-white'
-            }
-        };
+    <!-- メインカード -->
+    <div class="bg-white rounded-3xl p-6 shadow-md border border-[#D8EDE2] transition-all duration-300 space-y-6" id="main-card">
+      
+      <!-- ヘッダー -->
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#E8F5E9] text-2xl transition-colors duration-300" id="brand-icon-wrapper">
+          <span id="brand-icon">🗺️</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-800 transition-colors duration-300" id="app-title">マイ・ローカル旅マップ</h1>
+        <p class="text-xs text-slate-500 transition-colors duration-300" id="app-subtitle">お気に入りの場所をスプレッドシートにコレクションしよう</p>
+      </div>
 
-        let currentTheme = 'mint';
+      <!-- リアルタイム・プレビュー -->
+      <div class="p-4 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200 space-y-3 transition-colors duration-300" id="preview-box">
+        <div class="flex justify-between items-center">
+          <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Preview</span>
+          <span id="preview-stars" class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</span>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span id="card-emoji" class="text-2xl pt-1">🥖</span>
+          <div class="space-y-1 min-w-0 flex-1">
+            <h3 id="card-name" class="font-bold text-slate-800 text-sm truncate">美味しいパン屋さん</h3>
+            <p class="text-xs text-slate-500 flex items-center gap-1 truncate" id="card-address-wrapper">
+              <i class="fa-solid fa-location-dot text-rose-500 text-[10px]"></i>
+              <span id="card-address">京都市中京区〇〇</span>
+            </p>
+            <p id="card-memo" class="text-xs text-slate-400 italic break-words">クロワッサンが絶品らしい！</p>
+          </div>
+        </div>
+      </div>
 
-        function setTheme(themeName) {
-            currentTheme = themeName;
-            const theme = themes[themeName];
-            
-            // Apply to background and main container
-            document.getElementById('body-bg').className = `${theme.bg} min-h-screen py-8 px-4 flex flex-col items-center justify-center theme-transition`;
-            document.getElementById('main-card').className = `${theme.card} rounded-3xl shadow-xl border p-6 md:p-8 space-y-6 theme-transition`;
-            
-            // Set dynamic CSS variables for custom focus styles
-            document.documentElement.style.setProperty('--theme-accent-color', theme.accent);
-            document.documentElement.style.setProperty('--theme-ring-color', theme.ring);
-            
-            // Apply submit button style
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.className = `w-full py-4 rounded-2xl text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 ${theme.btnClass}`;
-            
-            // Header elements
-            document.getElementById('header-icon-container').className = `inline-flex items-center justify-center w-16 h-16 rounded-2xl text-3xl theme-transition ${theme.headerIconBg}`;
-            document.getElementById('app-title').className = `text-xl md:text-2xl font-bold tracking-tight theme-transition ${theme.titleColor}`;
-            
-            // Manage Active Ring Indicators in theme switcher
-            ['mint', 'cafe', 'sunset', 'midnight'].forEach(t => {
-                const btn = document.getElementById(`btn-${t}`);
-                if (t === themeName) {
-                    btn.classList.add('ring-offset-2', 'ring-slate-400');
-                } else {
-                    btn.classList.remove('ring-offset-2', 'ring-slate-400');
-                }
-            });
+      <!-- 入力フォーム -->
+      <form onsubmit="handleSubmit(event)" class="space-y-4">
+        
+        <!-- 店名 -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-name">
+            <i class="fa-solid fa-store text-slate-400"></i>
+            <span>店名・スポット名 <span class="text-rose-500 text-[10px]">(必須)</span></span>
+          </label>
+          <input type="text" id="name" required oninput="updatePreview()"
+                 placeholder="例：美味しいパン屋さん" 
+                 class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F]/20 focus:border-[#2D6A4F] text-sm transition-all placeholder:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
+        </div>
+
+        <!-- 住所 -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-address">
+            <i class="fa-solid fa-map-pin text-slate-400"></i>
+            <span>住所・場所 <span class="text-rose-500 text-[10px]">(必須)</span></span>
+          </label>
+          <input type="text" id="address" required oninput="updatePreview()"
+                 placeholder="例：京都市中京区〇〇" 
+                 class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F]/20 focus:border-[#2D6A4F] text-sm transition-all placeholder:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
+        </div>
+
+        <!-- ジャンル -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-genre">
+            <i class="fa-solid fa-tags text-slate-400"></i>
+            <span>ジャンル</span>
+          </label>
+          <select id="genre" onchange="updatePreview()"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F]/20 focus:border-[#2D6A4F] text-sm bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white transition-all">
+            <option value="🥖 パン屋">🥖 パン屋</option>
+            <option value="☕ カフェ">☕ カフェ</option>
+            <option value="🍜 ラーメン・飲食">🍜 ラーメン・飲食</option>
+            <option value="🏯 観光スポット">🏯 観光スポット</option>
+            <option value="🛍️ ショップ">🛍️ ショップ</option>
+            <option value="✨ その他">✨ その他</option>
+          </select>
+        </div>
+
+        <!-- おすすめ度（星評価）⭐新機能 -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-rating">
+            <i class="fa-solid fa-star text-slate-400"></i>
+            <span>おすすめ度</span>
+          </label>
+          <div class="flex items-center space-x-2 py-1">
+            <input type="hidden" id="rating-value" value="5">
+            <div class="flex space-x-1" id="star-container">
+              <button type="button" onclick="setRating(1)" class="text-2xl text-amber-400 hover:scale-110 transition-transform focus:outline-none"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="setRating(2)" class="text-2xl text-amber-400 hover:scale-110 transition-transform focus:outline-none"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="setRating(3)" class="text-2xl text-amber-400 hover:scale-110 transition-transform focus:outline-none"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="setRating(4)" class="text-2xl text-amber-400 hover:scale-110 transition-transform focus:outline-none"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="setRating(5)" class="text-2xl text-amber-400 hover:scale-110 transition-transform focus:outline-none"><i class="fa-solid fa-star"></i></button>
+            </div>
+            <span id="rating-text" class="text-sm font-bold text-slate-500 ml-2">5つ星</span>
+          </div>
+        </div>
+
+        <!-- メモ -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-600 flex items-center gap-1" id="label-memo">
+            <i class="fa-solid fa-comment-dots text-slate-400"></i>
+            <span>メモ</span>
+          </label>
+          <textarea id="memo" rows="2" oninput="updatePreview()"
+                    placeholder="例：クロワッサンが絶品らしい！" 
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F]/20 focus:border-[#2D6A4F] text-sm transition-all placeholder:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-white resize-none"></textarea>
+        </div>
+
+        <!-- 送信ボタン -->
+        <button type="submit" id="submit-btn"
+                class="w-full py-3.5 bg-[#2D6A4F] hover:bg-[#1B4332] text-white font-bold rounded-xl shadow-md transition-all duration-150 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-paper-plane text-xs" id="btn-icon"></i>
+          <span id="btn-text">スプレッドシートに登録</span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // 💡 ここにあなたのGASのウェブアプリURLを貼り付けてください！
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzkkf166CB8p18PCTQc0TGCdVSXc_SFlTmXn_kHWkV-IRJC1c8FBUMWTTg_IFXZdgRN-Q/exec";
+
+    let currentTheme = 'mint';
+
+    // 星評価の制御
+    function setRating(rating) {
+      document.getElementById('rating-value').value = rating;
+      const stars = document.querySelectorAll('#star-container button i');
+      
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.className = 'fa-solid fa-star text-amber-400';
+        } else {
+          star.className = 'fa-regular fa-star text-slate-300 dark:text-slate-600';
         }
+      });
 
-        // --- PREVIEW LOGIC ---
-        const genreEmojis = {
-            'パン屋': '🥖',
-            'カフェ': '☕',
-            '観光スポット': '🏯',
-            'その他': '📍'
-        };
+      // テキスト表示の変更
+      document.getElementById('rating-text').innerText = `${rating}つ星`;
+      
+      // プレビュー表示の変更
+      let starString = '';
+      for (let i = 0; i < rating; i++) {
+        starString += '⭐';
+      }
+      document.getElementById('preview-stars').innerText = starString;
+    }
 
-        function updatePreview() {
-            const name = document.getElementById('name').value || '美味しいパン屋さん';
-            const address = document.getElementById('address').value || '京都市中京区〇〇';
-            const genre = document.getElementById('genre').value;
-            const memo = document.getElementById('memo').value || 'クロワッサンが絶品らしい！';
+    // プレビューのリアルタイム更新
+    function updatePreview() {
+      const name = document.getElementById('name').value || '美味しいパン屋さん';
+      const address = document.getElementById('address').value || '京都市中京区〇〇';
+      const memo = document.getElementById('memo').value || 'クロワッサンが絶品らしい！';
+      const genreSelect = document.getElementById('genre');
+      const genreValue = genreSelect.value;
+      
+      // 絵文字の抽出 (先頭の文字)
+      const emoji = genreValue.split(' ')[0] || '📍';
 
-            document.getElementById('preview-name').innerText = name;
-            document.getElementById('preview-address').innerText = address;
-            document.getElementById('preview-genre-icon').innerText = genreEmojis[genre] || '📍';
-            document.getElementById('preview-memo').innerText = memo;
-        }
+      document.getElementById('card-name').innerText = name;
+      document.getElementById('card-address').innerText = address;
+      document.getElementById('card-memo').innerText = memo;
+      document.getElementById('card-emoji').innerText = emoji;
+    }
 
-        // --- SUBMIT LOGIC ---
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzkkf166CB8p18PCTQc0TGCdVSXc_SFlTmXn_kHWkV-IRJC1c8FBUMWTTg_IFXZdgRN-Q/exec";
+    // 送信処理
+    function handleSubmit(event) {
+      event.preventDefault();
 
-        document.getElementById('mapForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitButton = document.getElementById('submitBtn');
-            const originalText = submitButton.innerHTML;
-            
-            // Loading UI state
-            submitButton.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-2"></i> 送信中...`;
-            submitButton.disabled = true;
+      const name = document.getElementById('name').value;
+      const address = document.getElementById('address').value;
+      const genre = document.getElementById('genre').value;
+      const rating = document.getElementById('rating-value').value;
+      const memo = document.getElementById('memo').value;
 
-            const data = {
-                name: document.getElementById('name').value,
-                address: document.getElementById('address').value,
-                genre: document.getElementById('genre').value,
-                memo: document.getElementById('memo').value
-            };
+      const btn = document.getElementById('submit-btn');
+      const btnIcon = document.getElementById('btn-icon');
+      const btnText = document.getElementById('btn-text');
 
-            fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                alert('🎉 スプレッドシートに無事登録されました！');
-                document.getElementById('mapForm').reset();
-                updatePreview();
-            })
-            .catch(error => {
-                // We fallback gracefully since local network setups occasionally hit CORS warnings despite succeeding
-                alert('🎉 スプレッドシートに登録されました！');
-                document.getElementById('mapForm').reset();
-                updatePreview();
-            })
-            .finally(() => {
-                submitButton.innerHTML = originalText;
-                submitButton.disabled = false;
-            });
-        });
+      // 送信中アニメーション (グルグル) の適用
+      btn.disabled = true;
+      btn.classList.add('opacity-80', 'cursor-not-allowed');
+      btnIcon.className = 'fa-solid fa-circle-notch animate-spin text-xs';
+      btnText.innerText = '送信中...';
 
-        // Initialize theme and live preview card on startup
-        setTheme('mint');
+      // データの作成
+      const payload = {
+        name: name,
+        address: address,
+        genre: genre,
+        rating: '⭐'.repeat(Number(rating)), // 数字を星文字（⭐⭐⭐）に変換
+        memo: memo
+      };
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        // 送信成功時の処理
+        btnIcon.className = 'fa-solid fa-circle-check text-xs';
+        btnText.innerText = '登録されました！';
+        btn.classList.replace('bg-[#2D6A4F]', 'bg-emerald-600');
+        
+        // フォームをリセットしてプレビューを初期値に
+        event.target.reset();
+        setRating(5); // 星を5に戻す
         updatePreview();
-    </script>
+
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.classList.remove('opacity-80', 'cursor-not-allowed');
+          btnIcon.className = 'fa-solid fa-paper-plane text-xs';
+          btnText.innerText = 'スプレッドシートに登録';
+          applyThemeBtnStyles(currentTheme);
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('エラーが発生しました。設定を確認してください。');
+        btn.disabled = false;
+        btn.classList.remove('opacity-80', 'cursor-not-allowed');
+        btnIcon.className = 'fa-solid fa-paper-plane text-xs';
+        btnText.innerText = 'スプレッドシートに登録';
+        applyThemeBtnStyles(currentTheme);
+      });
+    }
+
+    // テーマ設定
+    function setTheme(themeName) {
+      currentTheme = themeName;
+      const config = tailwind.config.theme.extend.colors.brand[themeName];
+      const html = document.documentElement;
+
+      // ダークモードの切り替え
+      if (themeName === 'midnight') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+
+      // 背景色
+      const bg = document.getElementById('body-bg');
+      bg.style.backgroundColor = config.bg;
+      if (themeName === 'midnight') {
+        bg.classList.add('text-white');
+        bg.classList.remove('text-slate-800');
+      } else {
+        bg.classList.remove('text-white');
+        bg.classList.add('text-slate-800');
+      }
+
+      // カード
+      const card = document.getElementById('main-card');
+      card.style.backgroundColor = config.card;
+      card.style.borderColor = config.border;
+
+      // タイトル・サブタイトル・各種テキストの色調整
+      const textEls = [
+        document.getElementById('app-title'),
+        document.getElementById('label-name'),
+        document.getElementById('label-address'),
+        document.getElementById('label-genre'),
+        document.getElementById('label-rating'),
+        document.getElementById('label-memo')
+      ];
+      textEls.forEach(el => {
+        if (themeName === 'midnight') {
+          el.classList.add('text-slate-200');
+          el.classList.remove('text-slate-800', 'text-slate-600');
+        } else {
+          el.classList.remove('text-slate-200');
+          if (el.id === 'app-title') el.classList.add('text-slate-800');
+          else el.classList.add('text-slate-600');
+        }
+      });
+
+      // アイコン枠
+      const iconWrapper = document.getElementById('brand-icon-wrapper');
+      iconWrapper.style.backgroundColor = config.accent;
+      
+      // プレビューボックス
+      const previewBox = document.getElementById('preview-box');
+      if (themeName === 'midnight') {
+        previewBox.classList.add('bg-slate-800/40', 'border-slate-700');
+        previewBox.classList.remove('bg-slate-50/50', 'border-slate-200');
+        document.getElementById('card-name').classList.add('text-slate-200');
+        document.getElementById('card-name').classList.remove('text-slate-800');
+      } else {
+        previewBox.classList.remove('bg-slate-800/40', 'border-slate-700');
+        previewBox.classList.add('bg-slate-50/50', 'border-slate-200');
+        document.getElementById('card-name').classList.remove('text-slate-200');
+        document.getElementById('card-name').classList.add('text-slate-800');
+      }
+
+      // 送信ボタンのカラー適用
+      applyThemeBtnStyles(themeName);
+    }
+
+    function applyThemeBtnStyles(themeName) {
+      const config = tailwind.config.theme.extend.colors.brand[themeName];
+      const btn = document.getElementById('submit-btn');
+      
+      btn.style.backgroundColor = config.primary;
+      btn.onmouseover = () => btn.style.backgroundColor = config.primaryHover;
+      btn.onmouseout = () => btn.style.backgroundColor = config.primary;
+    }
+
+    // 初期化
+    window.onload = () => {
+      updatePreview();
+      setRating(5);
+    }
+  </script>
 </body>
 </html>
-        
