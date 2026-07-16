@@ -226,6 +226,8 @@ fetch(GAS_URL)
       `;
       return;
     }
+    // 💡 229行目のすぐ上に、この1行を追加して「displaySpots」という関数を作ります！
+function displaySpots(data) {
           // 最新の登録が「上」に来るようにデータを逆順にする
           data.reverse().forEach(spot => {
             const card = document.createElement('div');
@@ -258,6 +260,10 @@ fetch(GAS_URL)
               </div>
             `;
             container.appendChild(card);
+
+// 💡 以下の2行を追加します！
+  });
+}
           });
         })
         .catch(error => {
