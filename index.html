@@ -193,6 +193,8 @@
     // 💡 ここに新しくコピーした【最新のGASのウェブアプリURL】を貼り付けてください！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyvEh9eAUMhUojkLhq-t3rHn_2nH0n6TPd4USTStkrIvdA0KCyiwU4KGrHQ4lyZn_d1iw/exec";
 
+// 💡 以下の1行を追加します！
+let allSpots = [];
     let currentTheme = 'mint';
 
     // スプレッドシートからデータを取得して一覧に表示する
@@ -207,21 +209,23 @@
         </div>
       `;
 
-      fetch(GAS_URL)
-        .then(response => response.json())
-        .then(data => {
-          container.innerHTML = '';
-          
-          if (data.length === 0) {
-            container.innerHTML = `
-              <div class="text-center py-8 text-slate-400">
-                <i class="fa-regular fa-folder-open text-xl mb-1 block"></i>
-                <p class="text-xs">まだ登録されているスポットがありません。</p>
-              </div>
-            `;
-            return;
-          }
+fetch(GAS_URL)
+  .then(response => response.json())
+  .then(data => {
+    // 💡【ここが重要！】届いたデータを「allSpots」に保存します
+    allSpots = data;
 
+    container.innerHTML = '';
+
+    if (data.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-8 text-slate-400">
+          <i class="fa-regular fa-folder-open text-xl mb-1 block"></i>
+          <p class="text-xs">まだ登録されているスポットがありません。</p>
+        </div>
+      `;
+      return;
+    }
           // 最新の登録が「上」に来るようにデータを逆順にする
           data.reverse().forEach(spot => {
             const card = document.createElement('div');
@@ -475,6 +479,30 @@
       setRating(5);
       fetchSpots(); // ページが開いた時に一覧を自動読み込み
     }
+    // ボタンが押されたときに実行される、ジャンル絞り込みの関数
+function filterGenre(genre) {
+  // 1. 押しボタンの見た目（アクティブ状態）を切り替える
+  const buttons = document.querySelectorAll('#filter-buttons button');
+  buttons.forEach(btn => {
+    if (btn.textContent.includes(genre)) {
+      // 選択されたボタンを「緑色」にする
+      btn.className = "px-4 py-1.5 rounded-full text-sm font-medium bg-emerald-600 text-white shadow-sm transition-colors";
+    } else {
+      // 選択されていないボタンを「薄いグレー」にする
+      btn.className = "px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors";
+    }
+  });
+
+  // 2. データの絞り込み
+  if (genre === 'すべて') {
+    // 「すべて」なら、保存しておいた全データをそのまま表示する
+    displaySpots(allSpots);
+  } else {
+    // filterを使い、ジャンルが一致するものだけを抽出
+    const filtered = allSpots.filter(spot => spot.genre === genre);
+    displaySpots(filtered);
+  }
+}
   </script>
 </body>
 </html>
