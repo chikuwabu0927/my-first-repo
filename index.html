@@ -261,21 +261,22 @@ function displaySpots(data) {
             `;
             container.appendChild(card);
 
-// 💡 以下の2行を追加します！
+});
+}
+
+    // ここは元々 fetchSpots の中で then を受けていた閉じカッコ類です
+    });
+  })
+  .catch(error => {
+    console.error('Error fetching spots:', error);
+    container.innerHTML = `
+      <div class="text-center py-8 text-rose-400">
+        <i class="fa-solid fa-triangle-exclamation text-xl mb-1 block"></i>
+        <p class="text-xs">データの読み込みに失敗しました。</p>
+      </div>
+    `;
   });
 }
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching spots:', error);
-          container.innerHTML = `
-            <div class="text-center py-8 text-rose-400">
-              <i class="fa-solid fa-triangle-exclamation text-xl mb-1 block"></i>
-              <p class="text-xs">データの読み込みに失敗しました。</p>
-            </div>
-          `;
-        });
-    }
 
     // 星評価の制御
     function setRating(rating) {
