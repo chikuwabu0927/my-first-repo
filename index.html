@@ -159,7 +159,26 @@
           <i class="fa-solid fa-rotate-right"></i> 更新
         </button>
       </div>
-
+<!-- ================= ここから貼り付け ================= -->
+    <!-- 絞り込みフィルターボタン -->
+    <div class="flex flex-wrap gap-2 my-4" id="filter-buttons">
+        <button onclick="filterGenre('すべて')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-emerald-600 text-white shadow-sm transition-colors hover:bg-emerald-700">
+            すべて
+        </button>
+        <button onclick="filterGenre('パン屋')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+            🍞 パン屋
+        </button>
+        <button onclick="filterGenre('カフェ')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+            ☕ カフェ
+        </button>
+        <button onclick="filterGenre('観光スポット')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+            🏛️ 観光スポット
+        </button>
+        <button onclick="filterGenre('その他')" class="px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+            📍 その他
+        </button>
+    </div>
+    <!-- ================= ここまで貼り付け ================= -->
       <div id="spots-container" class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
         <div class="text-center py-8 text-slate-400 space-y-2">
           <i class="fa-solid fa-circle-notch animate-spin text-xl"></i>
