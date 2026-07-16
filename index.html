@@ -493,14 +493,18 @@ function filterGenre(genre) {
     }
   });
 
-  // 2. データの絞り込み
+// 2. データの絞り込み
   if (genre === 'すべて') {
     // 「すべて」なら、保存しておいた全データをそのまま表示する
     displaySpots(allSpots);
   } else {
     // filterを使い、ジャンルが一致するものだけを抽出
     const filtered = allSpots.filter(spot => spot.genre === genre);
+    
+    // 💡【ここを変更！】絞り込んだデータ（filtered）を渡して、画面を再描画します
     displaySpots(filtered);
+  }
+}
   }
 }
   </script>
