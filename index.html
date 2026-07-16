@@ -197,84 +197,85 @@
 let allSpots = [];
     let currentTheme = 'mint';
 
-    // スプレッドシートからデータを取得して一覧に表示する
-    function fetchSpots() {
-      const container = document.getElementById('spots-container');
+function fetchSpots() {
+  const container = document.getElementById('spots-container');
+  
+  // 読み込み中表示
+  container.innerHTML = `
+    <div class="text-center py-8 text-slate-400 space-y-2">
+      <i class="fa-solid fa-circle-notch animate-spin text-xl"></i>
+      <p class="text-xs">スポットを読み込んでいます...</p>
+    </div>
+  `;
+
+  fetch(GAS_URL)
+    .then(response => response.json())
+    .then(data => {
+      // 届いたデータをグローバル変数に保存
+      allSpots = data;
       
-      // 読み込み中表示
+      container.innerHTML = '';
+
+      if (data.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-400">
+            <i class="fa-regular fa-folder-open text-xl mb-1 block"></i>
+            <p class="text-xs">まだ登録されているスポットがありません。</p>
+          </div>
+        `;
+        return;
+      }
+
+      // データを画面に表示する
+      displaySpots(data);
+    })
+    .catch(error => {
+      console.error('Error fetching spots:', error);
       container.innerHTML = `
-        <div class="text-center py-8 text-slate-400 space-y-2">
-          <i class="fa-solid fa-circle-notch animate-spin text-xl"></i>
-          <p class="text-xs">スポットを読み込んでいます...</p>
+        <div class="text-center py-8 text-rose-400">
+          <i class="fa-solid fa-triangle-exclamation text-xl mb-1 block"></i>
+          <p class="text-xs">データの読み込みに失敗しました。</p>
         </div>
       `;
-
-fetch(GAS_URL)
-  .then(response => response.json())
-  .then(data => {
-    // 💡【ここが重要！】届いたデータを「allSpots」に保存します
-    allSpots = data;
-
-    container.innerHTML = '';
-
-    if (data.length === 0) {
-      container.innerHTML = `
-        <div class="text-center py-8 text-slate-400">
-          <i class="fa-regular fa-folder-open text-xl mb-1 block"></i>
-          <p class="text-xs">まだ登録されているスポットがありません。</p>
-        </div>
-      `;
-      return;
-    }
-    // 💡 229行目のすぐ上に、この1行を追加して「displaySpots」という関数を作ります！
-function displaySpots(data) {
-          // 最新の登録が「上」に来るようにデータを逆順にする
-          data.reverse().forEach(spot => {
-            const card = document.createElement('div');
-            
-            // ジャンルから絵文字を分離
-            const emoji = spot.genre ? spot.genre.split(' ')[0] : '📍';
-            const genreText = spot.genre ? spot.genre : 'その他';
-
-            // ダークモードとテーマ別のカード背景色の対応
-            const isDark = document.documentElement.classList.contains('dark');
-            const cardBg = isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50/50 border-slate-100';
-            const textClass = isDark ? 'text-slate-200' : 'text-slate-800';
-            const memoClass = isDark ? 'text-slate-400' : 'text-slate-500';
-
-            card.className = `p-4 rounded-2xl border transition-all duration-300 ${cardBg} space-y-2`;
-            card.innerHTML = `
-              <div class="flex justify-between items-start">
-                <div class="flex items-center space-x-2 min-w-0">
-                  <span class="text-xl">${emoji}</span>
-                  <h4 class="font-bold text-sm ${textClass} truncate">${spot.name}</h4>
-                </div>
-                <span class="text-amber-400 text-xs shrink-0">${spot.rating || ''}</span>
-              </div>
-              <div class="space-y-1 pl-7">
-                <p class="text-[11px] text-slate-400 flex items-center gap-1 truncate">
-                  <i class="fa-solid fa-location-dot text-rose-500 text-[10px]"></i>
-                  <span>${spot.address}</span>
-                </p>
-                ${spot.memo ? `<p class="text-xs ${memoClass} italic break-words bg-white/40 dark:bg-slate-900/40 p-2 rounded-xl mt-1">${spot.memo}</p>` : ''}
-              </div>
-            `;
-            container.appendChild(card);
-
-});
+    });
 }
 
-    // ここは元々 fetchSpots の中で then を受けていた閉じカッコ類です
-    });
-  })
-  .catch(error => {
-    console.error('Error fetching spots:', error);
-    container.innerHTML = `
-      <div class="text-center py-8 text-rose-400">
-        <i class="fa-solid fa-triangle-exclamation text-xl mb-1 block"></i>
-        <p class="text-xs">データの読み込みに失敗しました。</p>
+function displaySpots(data) {
+  const container = document.getElementById('spots-container');
+  container.innerHTML = ''; // 一度画面を空にする
+
+  // 最新の登録が「上」に来るようにデータを逆順にしてループ
+  data.slice().reverse().forEach(spot => {
+    const card = document.createElement('div');
+
+    // ジャンルから絵文字を分離
+    const emoji = spot.genre ? spot.genre.split(' ')[0] : '📍';
+    const genreText = spot.genre ? spot.genre : 'その他';
+
+    // ダークモードとテーマ別のカード背景色の対応
+    const isDark = document.documentElement.classList.contains('dark');
+    const cardBg = isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50/50 border-slate-100';
+    const textClass = isDark ? 'text-slate-200' : 'text-slate-800';
+    const memoClass = isDark ? 'text-slate-400' : 'text-slate-500';
+
+    card.className = `p-4 rounded-2xl border transition-all duration-300 ${cardBg} space-y-2`;
+    card.innerHTML = `
+      <div class="flex justify-between items-start">
+        <div class="flex items-center space-x-2 min-w-0">
+          <span class="text-xl">${emoji}</span>
+          <h4 class="font-bold text-sm ${textClass} truncate">${spot.name}</h4>
+        </div>
+        <span class="text-amber-400 text-xs shrink-0">${spot.rating || ''}</span>
+      </div>
+      <div class="space-y-1 pl-7">
+        <p class="text-[11px] text-slate-400 flex items-center gap-1 truncate">
+          <i class="fa-solid fa-location-dot text-rose-500 text-[10px]"></i>
+          <span>${spot.address}</span>
+        </p>
+        ${spot.memo ? `<p class="text-xs ${memoClass} italic break-words bg-white/40 dark:bg-slate-900/40 p-2 rounded-xl mt-1">${spot.memo}</p>` : ''}
       </div>
     `;
+    container.appendChild(card);
   });
 }
 
